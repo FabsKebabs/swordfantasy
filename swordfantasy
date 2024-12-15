@@ -1,0 +1,177 @@
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+local Window = OrionLib:MakeWindow({
+    Name = [[<font color="rgb(255,0,0)">Publoader-Sword Fantasy</font>]],
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "OrionTest"
+})
+
+local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
+local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
+local Tab3 = Window:MakeTab({Name = "Auto Farm", Icon = "", PremiumOnly = false})
+
+local Player = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+
+local AutoClickEnabled = false
+local FreezeEnabled = false
+
+-- Freeze Player Function
+local function freezePlayer()
+    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = Player.Character.HumanoidRootPart
+        hrp.Anchored = FreezeEnabled
+    end
+end
+
+-- Autoclick Function
+local function autoClick()
+    spawn(function()
+        OrionLib:MakeNotification({
+            Name = "Autoclick Enabled",
+            Content = "Press '=' and Backspace to stop autoclick",
+            Time = 3
+        })
+        while AutoClickEnabled do
+            wait(0.1) -- 100ms delay
+            game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 1)
+            game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 1)
+        end
+    end)
+end
+
+-- Stop Autoclick when '=' and Backspace are pressed together
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then
+        if UIS:IsKeyDown(Enum.KeyCode.Equals) and input.KeyCode == Enum.KeyCode.Backspace then
+            AutoClickEnabled = false
+            OrionLib:MakeNotification({
+                Name = "Autoclick Stopped",
+                Content = "Autoclick has been stopped!",
+                Time = 2
+            })
+        end
+    end
+end)
+
+-- Main Tab Elements
+Tab1:AddToggle({
+    Name = "Freeze Player",
+    Default = false,
+    Callback = function(Value)
+        FreezeEnabled = Value
+        freezePlayer()
+    end
+})
+
+Tab1:AddToggle({
+    Name = "Autoclick (100ms)",
+    Default = false,
+    Callback = function(Value)
+        AutoClickEnabled = Value
+        if AutoClickEnabled then
+            autoClick()
+        end
+    end
+})
+
+-- Teleports Tab
+local function teleportTo(position)
+    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+        Player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+    end
+end
+
+Tab2:AddButton({
+    Name = "Spawn",
+    Callback = function()
+        teleportTo(Vector3.new(-54, 29, -1311))
+    end
+})
+
+Tab2:AddButton({
+    Name = "Wolf Forest",
+    Callback = function()
+        teleportTo(Vector3.new(-19, 29, -1996))
+    end
+})
+
+Tab2:AddButton({
+    Name = "Spider Cave",
+    Callback = function()
+        teleportTo(Vector3.new(-221, 29, -2478))
+    end
+})
+
+Tab2:AddButton({
+    Name = "Bee Forest",
+    Callback = function()
+        teleportTo(Vector3.new(696, 87, -2358))
+    end
+})
+
+Tab2:AddButton({
+    Name = "Crab Beach",
+    Callback = function()
+        teleportTo(Vector3.new(1401, 33, -1512))
+    end
+})
+
+Tab2:AddButton({
+    Name = "Castle",
+    Callback = function()
+        teleportTo(Vector3.new(449, 349, -2598))
+    end
+})
+
+-- Auto Farm Wolves Variables
+local AutoFarmWolvesEnabled = false
+
+local WolfPositions = {
+    Vector3.new(103, 29, -2173), -- Wolf1
+    Vector3.new(145, 29, -2137), -- Wolf2
+    Vector3.new(49, 29, -2122),  -- Wolf3
+    Vector3.new(58, 29, -2070)   -- Wolf4
+}
+
+-- Auto Farm Wolves Function
+local function autoFarmWolves()
+    spawn(function()
+        OrionLib:MakeNotification({
+            Name = "Auto Farm Wolves",
+            Content = "Auto farm wolves started! Press '=' and Backspace to stop.",
+            Time = 3
+        })
+        AutoClickEnabled = true -- Enable autoclick
+        autoClick()
+        
+        while AutoFarmWolvesEnabled do
+            for _, position in ipairs(WolfPositions) do
+                if not AutoFarmWolvesEnabled then break end -- Stop if disabled
+                teleportTo(position)
+                wait(0.5) -- Small delay to ensure teleport completes
+            end
+        end
+
+        AutoClickEnabled = false -- Disable autoclick when stopped
+    end)
+end
+
+-- Add Auto Farm Wolves Button in Auto Farm Tab
+Tab3:AddToggle({
+    Name = "Auto Farm Wolves",
+    Default = false,
+    Callback = function(Value)
+        AutoFarmWolvesEnabled = Value
+        if AutoFarmWolvesEnabled then
+            autoFarmWolves()
+        else
+            OrionLib:MakeNotification({
+                Name = "Auto Farm Stopped",
+                Content = "Auto farm has been stopped!",
+                Time = 2
+            })
+        end
+    end
+})
