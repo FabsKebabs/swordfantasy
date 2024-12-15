@@ -4,7 +4,7 @@ local Window = OrionLib:MakeWindow({
     Name = [[<font color="rgb(255,0,0)">Publoader-Sword Fantasy</font>]],
     HidePremium = false,
     SaveConfig = true,
-    ConfigFolder = "OrionTest"
+    ConfigFolder = "Subscribe To Pubzy"
 })
 
 local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
