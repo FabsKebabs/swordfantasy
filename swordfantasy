@@ -131,15 +131,11 @@ local SpeedToggleEnabled = false  -- State for the speed toggle
 local NormalWalkSpeed = 16        -- Default walkspeed (Roblox default)
 local BoostedWalkSpeed = 50       -- Custom boosted speed
 
--- Function to update WalkSpeed
-local function updateWalkSpeed()
+-- Function to force WalkSpeed
+local function forceWalkSpeed()
     if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-        local humanoid = Player.Character:FindFirstChild("Humanoid")
-        if SpeedToggleEnabled then
-            humanoid.WalkSpeed = BoostedWalkSpeed
-        else
-            humanoid.WalkSpeed = NormalWalkSpeed
-        end
+        local humanoid = Player.Character.Humanoid
+        humanoid.WalkSpeed = SpeedToggleEnabled and BoostedWalkSpeed or NormalWalkSpeed
     end
 end
 
@@ -149,22 +145,21 @@ Tab1:AddToggle({
     Default = false,
     Callback = function(Value)
         SpeedToggleEnabled = Value
-        updateWalkSpeed()
+        forceWalkSpeed()
     end
 })
 
 -- Ensures WalkSpeed persists when the player respawns
 Player.CharacterAdded:Connect(function()
     wait(1) -- Wait for character to fully load
-    updateWalkSpeed()
+    forceWalkSpeed()
 end)
 
--- Continuously ensure WalkSpeed stays boosted if the toggle is on
+-- Continuously force WalkSpeed, overriding game changes
 RunService.Heartbeat:Connect(function()
-    if SpeedToggleEnabled and Player.Character and Player.Character:FindFirstChild("Humanoid") then
-        local humanoid = Player.Character:FindFirstChild("Humanoid")
-        if humanoid.WalkSpeed ~= BoostedWalkSpeed then
-            humanoid.WalkSpeed = BoostedWalkSpeed
-        end
+    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+        local humanoid = Player.Character.Humanoid
+        humanoid.WalkSpeed = SpeedToggleEnabled and BoostedWalkSpeed or NormalWalkSpeed
     end
 end)
+
