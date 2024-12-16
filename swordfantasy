@@ -163,7 +163,3 @@ Tab3:AddToggle({
     end
 })
 
-Tab4:AddButton({
-    Name = "Spider Small Boss", 
-    Callback = function() teleportTo(Vector3.new(-252, 20, -3077)) end
-})
