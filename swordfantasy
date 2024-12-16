@@ -17,6 +17,7 @@ local UIS = game:GetService("UserInputService")
 
 local AutoClickEnabled = false
 local FreezeEnabled = false
+local AntiAFKEnabled = false
 
 -- Freeze Player Function
 local function freezePlayer()
@@ -30,7 +31,7 @@ end
 local function autoClick()
     spawn(function()
         OrionLib:MakeNotification({
-            Name = "Autoclick Enabled",
+            Name = "Auto Click Enabled",
             Content = "Press '=' and Backspace to stop autoclick",
             Time = 3
         })
