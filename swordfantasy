@@ -10,16 +10,17 @@ local Window = OrionLib:MakeWindow({
 local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
 local Tab3 = Window:MakeTab({Name = "Auto Farm", Icon = "", PremiumOnly = false})
-local Tab4 = Window:MakeTab({Name = "Bosses", Icon = "", PremiumOnly = false})  -- New Bosses Tab
-local Tab5 = Window:MakeTab({Name = "Settings", Icon = "", PremiumOnly = false})  --Settings tab
+local Tab4 = Window:MakeTab({Name = "Bosses", Icon = "", PremiumOnly = false})
+local Tab5 = Window:MakeTab({Name = "Settings", Icon = "", PremiumOnly = false})
 
 local Player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
 
+-- State Variables
 local AutoClickEnabled = false
 local FreezeEnabled = false
 local AntiAFKEnabled = false
-
+local AutoFarmWolvesEnabled = false
 
 -- Freeze Player Function
 local function freezePlayer()
@@ -38,57 +39,73 @@ local function autoClick()
             Time = 3
         })
         while AutoClickEnabled do
-            wait(0.1) -- 100ms delay
+            wait(0.1)
             game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 1)
             game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 1)
         end
     end)
 end
 
-
--- Anti-AFK System (toggleable)
+-- Anti-AFK Function
 local function antiAFK()
-    if AntiAFKEnabled then
-        spawn(function()
-            while AntiAFKEnabled do
-                wait(60)
-                local virtualUser = game:service("VirtualUser")
-                virtualUser:CaptureController()
-                virtualUser:ClickButton2(Vector2.new())
-            end
-        end)
-        OrionLib:MakeNotification({
-            Name = "Anti-AFK Activated",
-            Content = "You will not be kicked for being idle!",
-            Time = 3
-        })
-    else
-        -- Deactivate anti-AFK
-        OrionLib:MakeNotification({
-            Name = "Anti-AFK Deactivated",
-            Content = "You will be kicked for inactivity.",
-            Time = 3
-        })
-    end
+    spawn(function()
+        while AntiAFKEnabled do
+            wait(60)
+            local virtualUser = game:service("VirtualUser")
+            virtualUser:CaptureController()
+            virtualUser:ClickButton2(Vector2.new())
+        end
+    end)
+    OrionLib:MakeNotification({
+        Name = "Anti-AFK Activated",
+        Content = "You will not be kicked for being idle!",
+        Time = 3
+    })
 end
 
-
--- Stop Autoclick when Backspace is pressed
+-- Stop Autoclick with Backspace
 UIS.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed then
-        if input.KeyCode == Enum.KeyCode.Backspace then
-            AutoClickEnabled = false
-            OrionLib:MakeNotification({
-                Name = "Autoclick Stopped",
-                Content = "Autoclick has been stopped!",
-                Time = 2
-            })
-        end
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.Backspace then
+        AutoClickEnabled = false
+        OrionLib:MakeNotification({
+            Name = "Autoclick Stopped",
+            Content = "Autoclick has been stopped!",
+            Time = 2
+        })
     end
 end)
 
+-- Teleport Function
+local function teleportTo(position)
+    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+        Player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+    end
+end
 
--- Main Tab Elements
+-- Auto Farm Wolves Function
+local WolfPositions = {
+    Vector3.new(103, 29, -2173),
+    Vector3.new(145, 29, -2137),
+    Vector3.new(49, 29, -2122),
+    Vector3.new(58, 29, -2070)
+}
+
+local function autoFarmWolves()
+    spawn(function()
+        AutoClickEnabled = true
+        autoClick()
+        while AutoFarmWolvesEnabled do
+            for _, pos in ipairs(WolfPositions) do
+                if not AutoFarmWolvesEnabled then break end
+                teleportTo(pos)
+                wait(0.5)
+            end
+        end
+        AutoClickEnabled = false
+    end)
+end
+
+-- Main Tab
 Tab1:AddToggle({
     Name = "Freeze Player",
     Default = false,
@@ -103,9 +120,7 @@ Tab1:AddToggle({
     Default = false,
     Callback = function(Value)
         AutoClickEnabled = Value
-        if AutoClickEnabled then
-            autoClick()
-        end
+        if AutoClickEnabled then autoClick() end
     end
 })
 
@@ -113,117 +128,30 @@ Tab1:AddToggle({
     Name = "Anti-AFK",
     Default = false,
     Callback = function(Value)
-        AntiAFKEnabled = Value  -- Toggle Anti-AFK
-        antiAFK()  -- Apply the change
+        AntiAFKEnabled = Value
+        antiAFK()
     end
 })
 
 -- Teleports Tab
-local function teleportTo(position)
-    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-        Player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
-    end
-end
+Tab2:AddButton({Name = "Spawn", Callback = function() teleportTo(Vector3.new(-54, 29, -1311)) end})
+Tab2:AddButton({Name = "Wolf Forest", Callback = function() teleportTo(Vector3.new(-19, 29, -1996)) end})
+Tab2:AddButton({Name = "Spider Cave", Callback = function() teleportTo(Vector3.new(-221, 29, -2478)) end})
+Tab2:AddButton({Name = "Bee Forest", Callback = function() teleportTo(Vector3.new(696, 87, -2358)) end})
+Tab2:AddButton({Name = "Crab Beach", Callback = function() teleportTo(Vector3.new(1401, 33, -1512)) end})
+Tab2:AddButton({Name = "Castle", Callback = function() teleportTo(Vector3.new(449, 349, -2598)) end})
 
-Tab2:AddButton({
-    Name = "Spawn",
-    Callback = function()
-        teleportTo(Vector3.new(-54, 29, -1311))
-    end
-})
+-- Bosses Tab
+Tab4:AddButton({Name = "Crab Boss", Callback = function() teleportTo(Vector3.new(6750, -1, 1009)) end})
+Tab4:AddButton({Name = "Spider Boss", Callback = function() teleportTo(Vector3.new(-3007, 88, 2885)) end})
 
-Tab2:AddButton({
-    Name = "Wolf Forest",
-    Callback = function()
-        teleportTo(Vector3.new(-19, 29, -1996))
-    end
-})
-
-Tab2:AddButton({
-    Name = "Spider Cave",
-    Callback = function()
-        teleportTo(Vector3.new(-221, 29, -2478))
-    end
-})
-
-Tab2:AddButton({
-    Name = "Bee Forest",
-    Callback = function()
-        teleportTo(Vector3.new(696, 87, -2358))
-    end
-})
-
-Tab2:AddButton({
-    Name = "Crab Beach",
-    Callback = function()
-        teleportTo(Vector3.new(1401, 33, -1512))
-    end
-})
-
-Tab2:AddButton({
-    Name = "Castle",
-    Callback = function()
-        teleportTo(Vector3.new(449, 349, -2598))
-    end
-})
-
--- Bosses Tab (New)
-Tab4:AddButton({
-    Name = "Crab Boss",
-    Callback = function()
-        teleportTo(Vector3.new(6750, -1, 1009))  -- Crab Boss position
-    end
-})
-
-
-Tab4:AddButton({
-    Name = "Spider Boss",
-    Callback = function()
-        teleportTo(Vector3.new(-3007, 88, 2885))  -- Spider Boss position (example)
-    end
-})
-
--- Auto Farm Wolves Variables
-local AutoFarmWolvesEnabled = false
-
-local WolfPositions = {
-    Vector3.new(103, 29, -2173), -- Wolf1
-    Vector3.new(145, 29, -2137), -- Wolf2
-    Vector3.new(49, 29, -2122),  -- Wolf3
-    Vector3.new(58, 29, -2070)   -- Wolf4
-}
-
--- Auto Farm Wolves Function
-local function autoFarmWolves()
-    spawn(function()
-        OrionLib:MakeNotification({
-            Name = "Auto Farm Wolves",
-            Content = "Auto farm wolves started! Press '=' and Backspace to stop.",
-            Time = 3
-        })
-        AutoClickEnabled = true -- Enable autoclick
-        autoClick()
-        
-        while AutoFarmWolvesEnabled do
-            for _, position in ipairs(WolfPositions) do
-                if not AutoFarmWolvesEnabled then break end -- Stop if disabled
-                teleportTo(position)
-                wait(0.5) -- Small delay to ensure teleport completes
-            end
-        end
-
-        AutoClickEnabled = false -- Disable autoclick when stopped
-    end)
-end
-
--- Add Auto Farm Wolves Button in Auto Farm Tab
+-- Auto Farm Tab
 Tab3:AddToggle({
     Name = "Auto Farm Wolves",
     Default = false,
     Callback = function(Value)
         AutoFarmWolvesEnabled = Value
-        if AutoFarmWolvesEnabled then
-            autoFarmWolves()
+        if AutoFarmWolvesEnabled then autoFarmWolves()
         else
             OrionLib:MakeNotification({
                 Name = "Auto Farm Stopped",
@@ -233,4 +161,3 @@ Tab3:AddToggle({
         end
     end
 })
-
