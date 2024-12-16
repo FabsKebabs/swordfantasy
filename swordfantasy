@@ -239,6 +239,62 @@ Tab5:AddLabel({
     end
 })
 
+-- Add FPS display functionality
+
+local FPSLabel = nil -- Variable to store the FPS label
+
+-- Function to update FPS and display it
+local function updateFPS()
+    local frameCount = 0
+    local startTime = tick()
+    
+    game:GetService("RunService").Heartbeat:Connect(function()
+        frameCount = frameCount + 1
+        local elapsedTime = tick() - startTime
+        
+        -- Update FPS every second
+        if elapsedTime >= 1 then
+            local fps = frameCount / elapsedTime
+            frameCount = 0
+            startTime = tick()
+            
+            if FPSLabel then
+                FPSLabel.Text = "FPS: " .. math.floor(fps)
+            end
+        end
+    end)
+end
+
+
+
+-- Settings Tab to show FPS
+Tab5:AddToggle({
+    Name = "Show FPS",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            -- Create the FPS label if it doesn't exist
+            if not FPSLabel then
+                FPSLabel = Instance.new("TextLabel")
+                FPSLabel.Parent = game.CoreGui
+                FPSLabel.Position = UDim2.new(0.05, 0, 0.05, 0)
+                FPSLabel.Size = UDim2.new(0, 200, 0, 50)
+                FPSLabel.TextSize = 18
+                FPSLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                FPSLabel.BackgroundTransparency = 1
+                FPSLabel.Text = "FPS: 0"
+            end
+            updateFPS() -- Start updating the FPS
+        else
+            -- Hide FPS label when toggle is off
+            if FPSLabel then
+                FPSLabel:Destroy()
+                FPSLabel = nil
+            end
+        end
+    end
+})
+
 
 -- Auto Farm Wolves Variables
 local AutoFarmWolvesEnabled = false
