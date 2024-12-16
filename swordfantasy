@@ -7,6 +7,17 @@ local Window = OrionLib:MakeWindow({
     ConfigFolder = "Subscribe To Pubzy"
 })
 
+-- Add "Created by Pubzy" label after the title
+local label = Instance.new("TextLabel")
+label.Text = "Created by Pubzy"
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.TextSize = 14
+label.TextStrokeTransparency = 0.8
+label.BackgroundTransparency = 1
+label.Position = UDim2.new(0.5, 0, 0.1, 0)  -- Positioned just below the window title
+label.AnchorPoint = Vector2.new(0.5, 0)  -- Centered horizontally
+label.Parent = Window.MainFrame
+
 local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
 local Tab3 = Window:MakeTab({Name = "Auto Farm", Icon = "", PremiumOnly = false})
@@ -184,15 +195,3 @@ Tab3:AddToggle({
         end
     end
 })
-
--- Add "Made by Pubzy" above the player profile
-local label = Instance.new("TextLabel")
-label.Text = "Made by Pubzy"
-label.TextColor3 = Color3.fromRGB(255, 255, 255)
-label.TextSize = 14
-label.TextStrokeTransparency = 0.8
-label.BackgroundTransparency = 1
-label.Position = UDim2.new(0.5, 0, 0.95, -10)  -- Position above the profile
-label.AnchorPoint = Vector2.new(0.5, 1)  -- Centered horizontally above
-label.Parent = Window.MainFrame
-
