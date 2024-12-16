@@ -42,6 +42,33 @@ local function autoClick()
     end)
 end
 
+
+-- Anti-AFK System (toggleable)
+local function antiAFK()
+    if AntiAFKEnabled then
+        spawn(function()
+            while AntiAFKEnabled do
+                wait(60)
+                local virtualUser = game:service("VirtualUser")
+                virtualUser:CaptureController()
+                virtualUser:ClickButton2(Vector2.new())
+            end
+        end)
+        OrionLib:MakeNotification({
+            Name = "Anti-AFK Activated",
+            Content = "You will not be kicked for being idle!",
+            Time = 3
+        })
+    else
+        -- Deactivate anti-AFK
+        OrionLib:MakeNotification({
+            Name = "Anti-AFK Deactivated",
+            Content = "You will be kicked for inactivity.",
+            Time = 3
+        })
+    end
+end
+
 -- Stop Autoclick when '=' and Backspace are pressed together
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed then
@@ -185,17 +212,4 @@ Tab3:AddToggle({
     end
 })
 
--- Anti-AFK Function
-local function antiAFK()
-    while true do
-        wait(5) -- Trigger every 5 seconds
-        if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-            -- Move the character slightly to the right
-            local hrp = Player.Character.HumanoidRootPart
-            hrp.CFrame = hrp.CFrame * CFrame.new(1, 0, 0)
-        end
-    end
-end
 
--- Start Anti-AFK when the script runs
-spawn(antiAFK)
