@@ -24,8 +24,11 @@ local SpeedToggleEnabled = false
 local NormalWalkSpeed = 16
 local BoostedWalkSpeed = 50
 
--- ====== AUTOFUNCTIONS ======
+-- Connections
 local autoClickConnection = nil
+local antiAFKConnection = nil
+
+-- ====== AUTOFUNCTIONS ======
 local function autoClick()
     if autoClickConnection then autoClickConnection:Disconnect() end
     if AutoClickEnabled then
@@ -41,7 +44,6 @@ local function autoClick()
     end
 end
 
-local antiAFKConnection = nil
 local function antiAFK()
     if antiAFKConnection then antiAFKConnection:Disconnect() end
     if AntiAFKEnabled then
@@ -50,10 +52,13 @@ local function antiAFK()
             Content = "You will not be kicked for being idle!",
             Time = 3
         })
-        antiAFKConnection = RunService.Heartbeat:Connect(function()
-            local virtualUser = game:GetService("VirtualUser")
-            virtualUser:CaptureController()
-            virtualUser:ClickButton2(Vector2.new())
+        antiAFKConnection = spawn(function()
+            while AntiAFKEnabled do
+                wait(60) -- Every 60 seconds
+                local virtualUser = game:GetService("VirtualUser")
+                virtualUser:CaptureController()
+                virtualUser:ClickButton2(Vector2.new())
+            end
         end)
     end
 end
