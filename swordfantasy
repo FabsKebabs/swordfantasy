@@ -11,6 +11,7 @@ local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
 local Tab3 = Window:MakeTab({Name = "Auto Farm", Icon = "", PremiumOnly = false})
 local Tab4 = Window:MakeTab({Name = "Bosses", Icon = "", PremiumOnly = false})  -- New Bosses Tab
+local Tab5 = Window:MakeTab({Name = "Settings", Icon = "", PremiumOnly = false})  --Settings tab
 
 local Player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
@@ -18,6 +19,7 @@ local UIS = game:GetService("UserInputService")
 local AutoClickEnabled = false
 local FreezeEnabled = false
 local AntiAFKEnabled = false
+
 
 -- Freeze Player Function
 local function freezePlayer()
@@ -70,10 +72,11 @@ local function antiAFK()
     end
 end
 
--- Stop Autoclick when '=' and Backspace are pressed together
+
+-- Stop Autoclick when Backspace is pressed
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed then
-        if UIS:IsKeyDown(Enum.KeyCode.Equals) and input.KeyCode == Enum.KeyCode.Backspace then
+        if input.KeyCode == Enum.KeyCode.Backspace then
             AutoClickEnabled = false
             OrionLib:MakeNotification({
                 Name = "Autoclick Stopped",
@@ -83,6 +86,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         end
     end
 end)
+
 
 -- Main Tab Elements
 Tab1:AddToggle({
@@ -171,17 +175,11 @@ Tab4:AddButton({
     end
 })
 
-Tab4:AddButton({
-    Name = "Wolf Boss",
-    Callback = function()
-        teleportTo(Vector3.new(5000, 29, -2500))  -- Wolf Boss position (example)
-    end
-})
 
 Tab4:AddButton({
     Name = "Spider Boss",
     Callback = function()
-        teleportTo(Vector3.new(6000, 29, -3000))  -- Spider Boss position (example)
+        teleportTo(Vector3.new(-3007, 88, 2885))  -- Spider Boss position (example)
     end
 })
 
@@ -235,3 +233,4 @@ Tab3:AddToggle({
         end
     end
 })
+
