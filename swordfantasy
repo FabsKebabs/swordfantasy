@@ -22,40 +22,73 @@ local AutoClickEnabled = false
 local FreezeEnabled = false
 local AntiAFKEnabled = false
 local SpeedToggleEnabled = false
+local teleportCooldown = false
+local failedTeleports = 0
+local maxFailedTeleports = 3
 
 -- Default WalkSpeed
 local NormalWalkSpeed = 16
 local BoostedWalkSpeed = 50
 
--- Freeze Player Function
+-- Utility Functions
+local function isCharacterValid()
+    local character = Player.Character
+    return character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Humanoid")
+end
+
 local function freezePlayer()
-    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+    if isCharacterValid() then
         local hrp = Player.Character.HumanoidRootPart
         hrp.Anchored = FreezeEnabled
     end
 end
 
--- Autoclick using RunService Heartbeat
+local function resetCharacter()
+    Player:LoadCharacter()
+end
+
+local function teleportTo(position)
+    if teleportCooldown then
+        OrionLib:MakeNotification({
+            Name = "Teleport Cooldown",
+            Content = "Wait before teleporting again!",
+            Time = 2
+        })
+        return
+    end
+
+    if not isCharacterValid() then
+        failedTeleports += 1
+        if failedTeleports >= maxFailedTeleports then
+            resetCharacter()
+            failedTeleports = 0
+        end
+        return
+    end
+
+    failedTeleports = 0
+    teleportCooldown = true
+    Player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+    wait(1) -- 1-second cooldown
+    teleportCooldown = false
+end
+
+-- Single RunService Heartbeat Connection
 RunService.Heartbeat:Connect(function()
     if AutoClickEnabled then
         game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 1)
         game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 1)
     end
-end)
 
--- Anti-AFK using RunService
-RunService.Heartbeat:Connect(function()
     if AntiAFKEnabled then
         VirtualUser:CaptureController()
         VirtualUser:ClickButton2(Vector2.new())
     end
-end)
 
--- WalkSpeed Toggle
-RunService.Heartbeat:Connect(function()
-    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-        local humanoid = Player.Character.Humanoid
-        humanoid.WalkSpeed = SpeedToggleEnabled and BoostedWalkSpeed or NormalWalkSpeed
+    if SpeedToggleEnabled and isCharacterValid() then
+        Player.Character.Humanoid.WalkSpeed = BoostedWalkSpeed
+    elseif isCharacterValid() then
+        Player.Character.Humanoid.WalkSpeed = NormalWalkSpeed
     end
 end)
 
@@ -71,12 +104,14 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- Teleport Function
-local function teleportTo(position)
-    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-        Player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+-- Ensures State Persists on Respawn
+Player.CharacterAdded:Connect(function()
+    wait(1)
+    if SpeedToggleEnabled and isCharacterValid() then
+        Player.Character.Humanoid.WalkSpeed = BoostedWalkSpeed
     end
-end
+    freezePlayer() -- Apply freeze if enabled
+end)
 
 -- Main Tab
 Tab1:AddToggle({
@@ -96,7 +131,7 @@ Tab1:AddToggle({
         if Value then
             OrionLib:MakeNotification({
                 Name = "Auto Click Enabled",
-                Content = "Press '=' and Backspace to stop autoclick",
+                Content = "Press Backspace to stop autoclick",
                 Time = 3
             })
         end
@@ -139,12 +174,3 @@ Tab4:AddButton({Name = "Crab Boss", Callback = function() teleportTo(Vector3.new
 Tab4:AddButton({Name = "Spider Boss", Callback = function() teleportTo(Vector3.new(-3007, 88, 2885)) end})
 Tab4:AddButton({Name = "Spider Small Boss", Callback = function() teleportTo(Vector3.new(-252, 20, -3077)) end})
 Tab4:AddButton({Name = "Crab Small Boss", Callback = function() teleportTo(Vector3.new(787, 27, -960)) end})
-
--- Ensures WalkSpeed persists when the player respawns
-Player.CharacterAdded:Connect(function()
-    wait(1) -- Wait for character to fully load
-    if SpeedToggleEnabled then
-        local humanoid = Player.Character:FindFirstChild("Humanoid")
-        if humanoid then humanoid.WalkSpeed = BoostedWalkSpeed end
-    end
-end)
