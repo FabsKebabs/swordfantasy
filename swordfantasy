@@ -126,6 +126,7 @@ Tab4:AddButton({Name = "Spider Small Boss", Callback = function() teleportTo(Vec
 Tab4:AddButton({Name = "Crab Small Boss", Callback = function() teleportTo(Vector3.new(787, 27, -960)) end})
 
 
+local RunService = game:GetService("RunService") -- RunService for Heartbeat event
 local SpeedToggleEnabled = false  -- State for the speed toggle
 local NormalWalkSpeed = 16        -- Default walkspeed (Roblox default)
 local BoostedWalkSpeed = 50       -- Custom boosted speed
@@ -158,3 +159,12 @@ Player.CharacterAdded:Connect(function()
     updateWalkSpeed()
 end)
 
+-- Continuously ensure WalkSpeed stays boosted if the toggle is on
+RunService.Heartbeat:Connect(function()
+    if SpeedToggleEnabled and Player.Character and Player.Character:FindFirstChild("Humanoid") then
+        local humanoid = Player.Character:FindFirstChild("Humanoid")
+        if humanoid.WalkSpeed ~= BoostedWalkSpeed then
+            humanoid.WalkSpeed = BoostedWalkSpeed
+        end
+    end
+end)
