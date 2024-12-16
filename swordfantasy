@@ -125,3 +125,36 @@ Tab4:AddButton({Name = "Spider Boss", Callback = function() teleportTo(Vector3.n
 Tab4:AddButton({Name = "Spider Small Boss", Callback = function() teleportTo(Vector3.new(-252, 20, -3077)) end})
 Tab4:AddButton({Name = "Crab Small Boss", Callback = function() teleportTo(Vector3.new(787, 27, -960)) end})
 
+
+local SpeedToggleEnabled = false  -- State for the speed toggle
+local NormalWalkSpeed = 16        -- Default walkspeed (Roblox default)
+local BoostedWalkSpeed = 50       -- Custom boosted speed
+
+-- Function to update WalkSpeed
+local function updateWalkSpeed()
+    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+        local humanoid = Player.Character:FindFirstChild("Humanoid")
+        if SpeedToggleEnabled then
+            humanoid.WalkSpeed = BoostedWalkSpeed
+        else
+            humanoid.WalkSpeed = NormalWalkSpeed
+        end
+    end
+end
+
+-- Toggle for WalkSpeed in Main Tab
+Tab1:AddToggle({
+    Name = "WalkSpeed Toggle (50)",
+    Default = false,
+    Callback = function(Value)
+        SpeedToggleEnabled = Value
+        updateWalkSpeed()
+    end
+})
+
+-- Ensures WalkSpeed persists when the player respawns
+Player.CharacterAdded:Connect(function()
+    wait(1) -- Wait for character to fully load
+    updateWalkSpeed()
+end)
+
