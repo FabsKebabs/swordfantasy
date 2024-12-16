@@ -1,4 +1,4 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/FabsKebabs/load/refs/heads/main/Source')))()
 
 local Window = OrionLib:MakeWindow({
     Name = [[<font color="rgb(255,0,0)">Publoader-Sword Fantasy</font>]],
