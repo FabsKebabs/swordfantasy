@@ -176,14 +176,13 @@ Tab3:AddToggle({
     end
 })
 
-
-local Label = Instance.new("TextLabel")
-Label.Parent = Window
-Label.Text = "Made by Pubzy"
-Label.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-Label.TextSize = 14
-Label.TextStrokeTransparency = 0.8  -- Optional for a nice text effect
-Label.AnchorPoint = Vector2.new(1, 1)  -- Align to the bottom right corner
-Label.Position = UDim2.new(1, -10, 1, -10)  -- Slight margin from the bottom right
-Label.BackgroundTransparency = 1  -- Make it invisible (no background)
-Label.Size = UDim2.new(0, 200, 0, 20)  -- Adjust size as necessary
+-- Add "Made by Pubzy" at the bottom right of the base window
+local label = Instance.new("TextLabel")
+label.Text = "Made by Pubzy"
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.TextSize = 14
+label.TextStrokeTransparency = 0.8
+label.BackgroundTransparency = 1
+label.Position = UDim2.new(1, -10, 1, -10) -- Bottom-right corner with a small margin
+label.AnchorPoint = Vector2.new(1, 1)
+label.Parent = Window.MainFrame
