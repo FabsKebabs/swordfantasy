@@ -228,8 +228,9 @@ Tab5:AddToggle({
 -- Optional: Display spoofed HWID in the UI (if needed for debugging or info)
 Tab5:AddLabel({
     Name = "Spoofed HWID",
-    Default = "None",
-    Callback = function(Value)
+    Default = "None",  -- Initial label text
+    Callback = function()
+        -- Dynamically update the label based on the spoofed HWID
         if spoofedHWID then
             return spoofedHWID  -- Show the spoofed HWID
         else
@@ -237,6 +238,7 @@ Tab5:AddLabel({
         end
     end
 })
+
 
 -- Auto Farm Wolves Variables
 local AutoFarmWolvesEnabled = false
