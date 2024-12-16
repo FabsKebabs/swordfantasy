@@ -171,6 +171,20 @@ Tab4:AddButton({
     end
 })
 
+Tab4:AddButton({
+    Name = "Wolf Boss",
+    Callback = function()
+        teleportTo(Vector3.new(5000, 29, -2500))  -- Wolf Boss position (example)
+    end
+})
+
+Tab4:AddButton({
+    Name = "Spider Boss",
+    Callback = function()
+        teleportTo(Vector3.new(6000, 29, -3000))  -- Spider Boss position (example)
+    end
+})
+
 -- Auto Farm Wolves Variables
 local AutoFarmWolvesEnabled = false
 
@@ -221,5 +235,3 @@ Tab3:AddToggle({
         end
     end
 })
-
-
