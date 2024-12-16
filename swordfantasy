@@ -7,17 +7,6 @@ local Window = OrionLib:MakeWindow({
     ConfigFolder = "Subscribe To Pubzy"
 })
 
--- Add "Created by Pubzy" label after the title
-local label = Instance.new("TextLabel")
-label.Text = "Created by Pubzy"
-label.TextColor3 = Color3.fromRGB(255, 255, 255)
-label.TextSize = 14
-label.TextStrokeTransparency = 0.8
-label.BackgroundTransparency = 1
-label.Position = UDim2.new(0.5, 0, 0.1, 0)  -- Positioned just below the window title
-label.AnchorPoint = Vector2.new(0.5, 0)  -- Centered horizontally
-label.Parent = Window.MainFrame
-
 local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
 local Tab3 = Window:MakeTab({Name = "Auto Farm", Icon = "", PremiumOnly = false})
@@ -195,3 +184,18 @@ Tab3:AddToggle({
         end
     end
 })
+
+-- Anti-AFK Function
+local function antiAFK()
+    while true do
+        wait(5) -- Trigger every 5 seconds
+        if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+            -- Move the character slightly to the right
+            local hrp = Player.Character.HumanoidRootPart
+            hrp.CFrame = hrp.CFrame * CFrame.new(1, 0, 0)
+        end
+    end
+end
+
+-- Start Anti-AFK when the script runs
+spawn(antiAFK)
