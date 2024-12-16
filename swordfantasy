@@ -1,3 +1,8 @@
+local RunService = game:GetService("RunService")
+local Player = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+
+-- Libraries
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/FabsKebabs/load/refs/heads/main/Source')))()
 
 local Window = OrionLib:MakeWindow({
@@ -10,95 +15,73 @@ local Window = OrionLib:MakeWindow({
 local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
 local Tab4 = Window:MakeTab({Name = "Bosses", Icon = "", PremiumOnly = false})
-local Tab5 = Window:MakeTab({Name = "Settings", Icon = "", PremiumOnly = false})
-
-local Player = game.Players.LocalPlayer
-local UIS = game:GetService("UserInputService")
 
 -- State Variables
 local AutoClickEnabled = false
-local FreezeEnabled = false
 local AntiAFKEnabled = false
-local AutoFarmWolvesEnabled = false
+local SpeedToggleEnabled = false
 
--- Freeze Player Function
-local function freezePlayer()
-    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-        local hrp = Player.Character.HumanoidRootPart
-        hrp.Anchored = FreezeEnabled
-    end
-end
+local NormalWalkSpeed = 16
+local BoostedWalkSpeed = 50
 
--- Autoclick Function
+-- ====== AUTOFUNCTIONS ======
+local autoClickConnection = nil
 local function autoClick()
-    spawn(function()
+    if autoClickConnection then autoClickConnection:Disconnect() end
+    if AutoClickEnabled then
         OrionLib:MakeNotification({
             Name = "Auto Click Enabled",
-            Content = "Press '=' and Backspace to stop autoclick",
+            Content = "Press Backspace to stop autoclick.",
             Time = 3
         })
-        while AutoClickEnabled do
-            wait(0.1)
+        autoClickConnection = RunService.Heartbeat:Connect(function()
             game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 1)
             game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 1)
-        end
-    end)
+        end)
+    end
 end
 
--- Anti-AFK Function
+local antiAFKConnection = nil
 local function antiAFK()
-    spawn(function()
-        while AntiAFKEnabled do
-            wait(60)
-            local virtualUser = game:service("VirtualUser")
+    if antiAFKConnection then antiAFKConnection:Disconnect() end
+    if AntiAFKEnabled then
+        OrionLib:MakeNotification({
+            Name = "Anti-AFK Activated",
+            Content = "You will not be kicked for being idle!",
+            Time = 3
+        })
+        antiAFKConnection = RunService.Heartbeat:Connect(function()
+            local virtualUser = game:GetService("VirtualUser")
             virtualUser:CaptureController()
             virtualUser:ClickButton2(Vector2.new())
-        end
-    end)
-    OrionLib:MakeNotification({
-        Name = "Anti-AFK Activated",
-        Content = "You will not be kicked for being idle!",
-        Time = 3
-    })
+        end)
+    end
 end
 
--- Stop Autoclick with Backspace
-UIS.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.Backspace then
-        AutoClickEnabled = false
-        OrionLib:MakeNotification({
-            Name = "Autoclick Stopped",
-            Content = "Autoclick has been stopped!",
-            Time = 2
-        })
+-- ====== WALKSPEED ======
+local function forceWalkSpeed()
+    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+        local humanoid = Player.Character.Humanoid
+        if SpeedToggleEnabled and humanoid.WalkSpeed ~= BoostedWalkSpeed then
+            humanoid.WalkSpeed = BoostedWalkSpeed
+        elseif not SpeedToggleEnabled and humanoid.WalkSpeed ~= NormalWalkSpeed then
+            humanoid.WalkSpeed = NormalWalkSpeed
+        end
     end
+end
+
+Player.CharacterAdded:Connect(function()
+    wait(1)
+    forceWalkSpeed()
 end)
 
--- Teleport Function
-local function teleportTo(position)
-    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-        Player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
-    end
-end
-
-
-
--- Main Tab
-Tab1:AddToggle({
-    Name = "Freeze Player",
-    Default = false,
-    Callback = function(Value)
-        FreezeEnabled = Value
-        freezePlayer()
-    end
-})
-
+-- ====== TOGGLES ======
 Tab1:AddToggle({
     Name = "Autoclick (100ms)",
     Default = false,
     Callback = function(Value)
         AutoClickEnabled = Value
-        if AutoClickEnabled then autoClick() end
+        autoClick()
     end
 })
 
@@ -111,35 +94,6 @@ Tab1:AddToggle({
     end
 })
 
--- Teleports Tab
-Tab2:AddButton({Name = "Spawn", Callback = function() teleportTo(Vector3.new(-54, 29, -1311)) end})
-Tab2:AddButton({Name = "Wolf Forest", Callback = function() teleportTo(Vector3.new(-19, 29, -1996)) end})
-Tab2:AddButton({Name = "Spider Cave", Callback = function() teleportTo(Vector3.new(-221, 29, -2478)) end})
-Tab2:AddButton({Name = "Bee Forest", Callback = function() teleportTo(Vector3.new(696, 87, -2358)) end})
-Tab2:AddButton({Name = "Crab Beach", Callback = function() teleportTo(Vector3.new(1401, 33, -1512)) end})
-Tab2:AddButton({Name = "Castle", Callback = function() teleportTo(Vector3.new(449, 349, -2598)) end})
-
--- Bosses Tab
-Tab4:AddButton({Name = "Crab Boss", Callback = function() teleportTo(Vector3.new(6750, -1, 1009)) end})
-Tab4:AddButton({Name = "Spider Boss", Callback = function() teleportTo(Vector3.new(-3007, 88, 2885)) end})
-Tab4:AddButton({Name = "Spider Small Boss", Callback = function() teleportTo(Vector3.new(-252, 20, -3077)) end})
-Tab4:AddButton({Name = "Crab Small Boss", Callback = function() teleportTo(Vector3.new(787, 27, -960)) end})
-
-
-local RunService = game:GetService("RunService") -- RunService for Heartbeat event
-local SpeedToggleEnabled = false  -- State for the speed toggle
-local NormalWalkSpeed = 16        -- Default walkspeed (Roblox default)
-local BoostedWalkSpeed = 50       -- Custom boosted speed
-
--- Function to force WalkSpeed
-local function forceWalkSpeed()
-    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-        local humanoid = Player.Character.Humanoid
-        humanoid.WalkSpeed = SpeedToggleEnabled and BoostedWalkSpeed or NormalWalkSpeed
-    end
-end
-
--- Toggle for WalkSpeed in Main Tab
 Tab1:AddToggle({
     Name = "WalkSpeed Toggle (50)",
     Default = false,
@@ -149,17 +103,25 @@ Tab1:AddToggle({
     end
 })
 
--- Ensures WalkSpeed persists when the player respawns
-Player.CharacterAdded:Connect(function()
-    wait(1) -- Wait for character to fully load
-    forceWalkSpeed()
-end)
-
--- Continuously force WalkSpeed, overriding game changes
-RunService.Heartbeat:Connect(function()
-    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-        local humanoid = Player.Character.Humanoid
-        humanoid.WalkSpeed = SpeedToggleEnabled and BoostedWalkSpeed or NormalWalkSpeed
+-- Stop Autoclick with Backspace
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.Backspace then
+        AutoClickEnabled = false
+        if autoClickConnection then
+            autoClickConnection:Disconnect()
+            autoClickConnection = nil
+        end
+        OrionLib:MakeNotification({
+            Name = "Autoclick Stopped",
+            Content = "Autoclick has been stopped!",
+            Time = 2
+        })
     end
 end)
 
+-- RunService Heartbeat to enforce WalkSpeed
+RunService.Heartbeat:Connect(function()
+    if SpeedToggleEnabled then
+        forceWalkSpeed()
+    end
+end)
