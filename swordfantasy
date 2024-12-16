@@ -1,4 +1,4 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/FabsKebabs/load/refs/heads/main/Source')))()
+ocal OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/FabsKebabs/load/refs/heads/main/Source')))()
 
 local Window = OrionLib:MakeWindow({
     Name = [[<font color="rgb(255,0,0)">Publoader-Sword Fantasy</font>]],
@@ -184,61 +184,6 @@ Tab4:AddButton({
         teleportTo(Vector3.new(6000, 29, -3000))  -- Spider Boss position (example)
     end
 })
-
-
--- Add Settings Tab for HWID Protection
-local Tab5 = Window:MakeTab({
-    Name = "Settings",
-    Icon = "",
-    PremiumOnly = false
-})
-
-local spoofedHWID = nil  -- Variable to store the spoofed HWID
-
--- Function to generate a random HWID-like string
-local function generateHWID()
-    return "HWID-" .. math.random(1000000, 9999999)  -- Simulating a random HWID string
-end
-
--- Add HWID Protection Toggle in Settings Tab
-Tab5:AddToggle({
-    Name = "Enable HWID Protection (Spoof)",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            -- Simulate HWID spoofing by generating a random HWID
-            spoofedHWID = generateHWID()
-            OrionLib:MakeNotification({
-                Name = "HWID Protection Enabled",
-                Content = "Your HWID has been spoofed: " .. spoofedHWID,
-                Time = 3
-            })
-        else
-            -- Reset the HWID (if necessary)
-            spoofedHWID = nil
-            OrionLib:MakeNotification({
-                Name = "HWID Protection Disabled",
-                Content = "HWID spoofing is now disabled.",
-                Time = 3
-            })
-        end
-    end
-})
-
--- Optional: Display spoofed HWID in the UI (if needed for debugging or info)
-Tab5:AddLabel({
-    Name = "Spoofed HWID",
-    Default = "None",  -- Initial label text
-    Callback = function()
-        -- Dynamically update the label based on the spoofed HWID
-        if spoofedHWID then
-            return spoofedHWID  -- Show the spoofed HWID
-        else
-            return "No HWID spoofing active"
-        end
-    end
-})
-
 
 -- Auto Farm Wolves Variables
 local AutoFarmWolvesEnabled = false
