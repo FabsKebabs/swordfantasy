@@ -11,6 +11,11 @@ local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
 local Tab3 = Window:MakeTab({Name = "Auto Farm", Icon = "", PremiumOnly = false})
 local Tab4 = Window:MakeTab({Name = "Bosses", Icon = "", PremiumOnly = false})  -- New Bosses Tab
+local Tab5 = Window:MakeTab({
+    Name = "Settings",
+    Icon = "",
+    PremiumOnly = false
+})
 
 local Player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
@@ -42,7 +47,6 @@ local function autoClick()
         end
     end)
 end
-
 
 -- Anti-AFK System (toggleable)
 local function antiAFK()
@@ -185,40 +189,27 @@ Tab4:AddButton({
     end
 })
 
-
--- Add Settings Tab for HWID Protection
-local Tab5 = Window:MakeTab({
-    Name = "Settings",
-    Icon = "",
-    PremiumOnly = false
-})
-
-local spoofedHWID = nil  -- Variable to store the spoofed HWID
-
--- Function to generate a random HWID-like string
-local function generateHWID()
-    return "HWID-" .. math.random(1000000, 9999999)  -- Simulating a random HWID string
-end
-
--- Add HWID Protection Toggle in Settings Tab
+-- Add FPS Toggle in Settings Tab
+local FPSLimitEnabled = false
 Tab5:AddToggle({
-    Name = "Enable HWID Protection (Spoof)",
+    Name = "Limit FPS",
     Default = false,
     Callback = function(Value)
-        if Value then
-            -- Simulate HWID spoofing by generating a random HWID
-            spoofedHWID = generateHWID()
+        FPSLimitEnabled = Value
+        if FPSLimitEnabled then
+            -- Limit the FPS to a desired number (e.g., 60 FPS)
+            game:GetService('RunService'):Set3dRenderingEnabled(false)  -- Disable rendering to limit FPS
             OrionLib:MakeNotification({
-                Name = "HWID Protection Enabled",
-                Content = "Your HWID has been spoofed: " .. spoofedHWID,
+                Name = "FPS Limit Enabled",
+                Content = "FPS has been limited to 60.",
                 Time = 3
             })
         else
-            -- Reset the HWID (if necessary)
-            spoofedHWID = nil
+            -- Reset FPS limit (restore normal FPS)
+            game:GetService('RunService'):Set3dRenderingEnabled(true)   -- Enable rendering for higher FPS
             OrionLib:MakeNotification({
-                Name = "HWID Protection Disabled",
-                Content = "HWID spoofing is now disabled.",
+                Name = "FPS Limit Disabled",
+                Content = "FPS is now unrestricted.",
                 Time = 3
             })
         end
@@ -238,114 +229,4 @@ Tab5:AddLabel({
         end
     end
 })
-
-
--- Auto Farm Wolves Variables
-local AutoFarmWolvesEnabled = false
-
-local WolfPositions = {
-    Vector3.new(103, 29, -2173), -- Wolf1
-    Vector3.new(145, 29, -2137), -- Wolf2
-    Vector3.new(49, 29, -2122),  -- Wolf3
-    Vector3.new(58, 29, -2070)   -- Wolf4
-}
-
--- Auto Farm Wolves Function
-local function autoFarmWolves()
-    spawn(function()
-        OrionLib:MakeNotification({
-            Name = "Auto Farm Wolves",
-            Content = "Auto farm wolves started! Press '=' and Backspace to stop.",
-            Time = 3
-        })
-        AutoClickEnabled = true -- Enable autoclick
-        autoClick()
-        
-        while AutoFarmWolvesEnabled do
-            for _, position in ipairs(WolfPositions) do
-                if not AutoFarmWolvesEnabled then break end -- Stop if disabled
-                teleportTo(position)
-                wait(0.5) -- Small delay to ensure teleport completes
-            end
-        end
-
-        AutoClickEnabled = false -- Disable autoclick when stopped
-    end)
-end
-
--- Add Auto Farm Wolves Button in Auto Farm Tab
-Tab3:AddToggle({
-    Name = "Auto Farm Wolves",
-    Default = false,
-    Callback = function(Value)
-        AutoFarmWolvesEnabled = Value
-        if AutoFarmWolvesEnabled then
-            autoFarmWolves()
-        else
-            OrionLib:MakeNotification({
-                Name = "Auto Farm Stopped",
-                Content = "Auto farm has been stopped!",
-                Time = 2
-            })
-        end
-    end
-})
-
-
--- Add FPS display functionality
-
-local FPSLabel = nil -- Variable to store the FPS label
-
--- Function to update FPS and display it
-local function updateFPS()
-    local frameCount = 0
-    local startTime = tick()
-    
-    game:GetService("RunService").Heartbeat:Connect(function()
-        frameCount = frameCount + 1
-        local elapsedTime = tick() - startTime
-        
-        -- Update FPS every second
-        if elapsedTime >= 1 then
-            local fps = frameCount / elapsedTime
-            frameCount = 0
-            startTime = tick()
-            
-            if FPSLabel then
-                FPSLabel.Text = "FPS: " .. math.floor(fps)
-            end
-        end
-    end)
-end
-
-
-
--- Settings Tab to show FPS
-Tab5:AddToggle({
-    Name = "Show FPS",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            -- Create the FPS label if it doesn't exist
-            if not FPSLabel then
-                FPSLabel = Instance.new("TextLabel")
-                FPSLabel.Parent = game.CoreGui
-                FPSLabel.Position = UDim2.new(0.05, 0, 0.05, 0)
-                FPSLabel.Size = UDim2.new(0, 200, 0, 50)
-                FPSLabel.TextSize = 18
-                FPSLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                FPSLabel.BackgroundTransparency = 1
-                FPSLabel.Text = "FPS: 0"
-            end
-            updateFPS() -- Start updating the FPS
-        else
-            -- Hide FPS label when toggle is off
-            if FPSLabel then
-                FPSLabel:Destroy()
-                FPSLabel = nil
-            end
-        end
-    end
-})
-
 
