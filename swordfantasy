@@ -104,6 +104,15 @@ Tab1:AddToggle({
     end
 })
 
+Tab1:AddToggle({
+    Name = "Anti-AFK",
+    Default = false,
+    Callback = function(Value)
+        AntiAFKEnabled = Value  -- Toggle Anti-AFK
+        antiAFK()  -- Apply the change
+    end
+})
+
 -- Teleports Tab
 local function teleportTo(position)
     if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
