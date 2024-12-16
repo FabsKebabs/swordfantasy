@@ -9,7 +9,6 @@ local Window = OrionLib:MakeWindow({
 
 local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
-local Tab3 = Window:MakeTab({Name = "Auto Farm", Icon = "", PremiumOnly = false})
 local Tab4 = Window:MakeTab({Name = "Bosses", Icon = "", PremiumOnly = false})
 local Tab5 = Window:MakeTab({Name = "Settings", Icon = "", PremiumOnly = false})
 
@@ -82,28 +81,7 @@ local function teleportTo(position)
     end
 end
 
--- Auto Farm Wolves Function
-local WolfPositions = {
-    Vector3.new(103, 29, -2173),
-    Vector3.new(145, 29, -2137),
-    Vector3.new(49, 29, -2122),
-    Vector3.new(58, 29, -2070)
-}
 
-local function autoFarmWolves()
-    spawn(function()
-        AutoClickEnabled = true
-        autoClick()
-        while AutoFarmWolvesEnabled do
-            for _, pos in ipairs(WolfPositions) do
-                if not AutoFarmWolvesEnabled then break end
-                teleportTo(pos)
-                wait(0.5)
-            end
-        end
-        AutoClickEnabled = false
-    end)
-end
 
 -- Main Tab
 Tab1:AddToggle({
@@ -146,22 +124,4 @@ Tab4:AddButton({Name = "Crab Boss", Callback = function() teleportTo(Vector3.new
 Tab4:AddButton({Name = "Spider Boss", Callback = function() teleportTo(Vector3.new(-3007, 88, 2885)) end})
 Tab4:AddButton({Name = "Spider Small Boss", Callback = function() teleportTo(Vector3.new(-252, 20, -3077)) end})
 Tab4:AddButton({Name = "Crab Small Boss", Callback = function() teleportTo(Vector3.new(787, 27, -960)) end})
-
-
--- Auto Farm Tab
-Tab3:AddToggle({
-    Name = "Auto Farm Wolves",
-    Default = false,
-    Callback = function(Value)
-        AutoFarmWolvesEnabled = Value
-        if AutoFarmWolvesEnabled then autoFarmWolves()
-        else
-            OrionLib:MakeNotification({
-                Name = "Auto Farm Stopped",
-                Content = "Auto farm has been stopped!",
-                Time = 2
-            })
-        end
-    end
-})
 
