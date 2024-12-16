@@ -10,6 +10,7 @@ local Window = OrionLib:MakeWindow({
 local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
 local Tab3 = Window:MakeTab({Name = "Auto Farm", Icon = "", PremiumOnly = false})
+local Tab4 = Window:MakeTab({Name = "Bosses", Icon = "", PremiumOnly = false})  -- New Bosses Tab
 
 local Player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
@@ -122,6 +123,14 @@ Tab2:AddButton({
     Name = "Castle",
     Callback = function()
         teleportTo(Vector3.new(449, 349, -2598))
+    end
+})
+
+-- Bosses Tab (New)
+Tab4:AddButton({
+    Name = "Crab Boss",
+    Callback = function()
+        teleportTo(Vector3.new(6750, -1, 1009))  -- Crab Boss position
     end
 })
 
