@@ -239,6 +239,59 @@ Tab5:AddLabel({
     end
 })
 
+
+-- Auto Farm Wolves Variables
+local AutoFarmWolvesEnabled = false
+
+local WolfPositions = {
+    Vector3.new(103, 29, -2173), -- Wolf1
+    Vector3.new(145, 29, -2137), -- Wolf2
+    Vector3.new(49, 29, -2122),  -- Wolf3
+    Vector3.new(58, 29, -2070)   -- Wolf4
+}
+
+-- Auto Farm Wolves Function
+local function autoFarmWolves()
+    spawn(function()
+        OrionLib:MakeNotification({
+            Name = "Auto Farm Wolves",
+            Content = "Auto farm wolves started! Press '=' and Backspace to stop.",
+            Time = 3
+        })
+        AutoClickEnabled = true -- Enable autoclick
+        autoClick()
+        
+        while AutoFarmWolvesEnabled do
+            for _, position in ipairs(WolfPositions) do
+                if not AutoFarmWolvesEnabled then break end -- Stop if disabled
+                teleportTo(position)
+                wait(0.5) -- Small delay to ensure teleport completes
+            end
+        end
+
+        AutoClickEnabled = false -- Disable autoclick when stopped
+    end)
+end
+
+-- Add Auto Farm Wolves Button in Auto Farm Tab
+Tab3:AddToggle({
+    Name = "Auto Farm Wolves",
+    Default = false,
+    Callback = function(Value)
+        AutoFarmWolvesEnabled = Value
+        if AutoFarmWolvesEnabled then
+            autoFarmWolves()
+        else
+            OrionLib:MakeNotification({
+                Name = "Auto Farm Stopped",
+                Content = "Auto farm has been stopped!",
+                Time = 2
+            })
+        end
+    end
+})
+
+
 -- Add FPS display functionality
 
 local FPSLabel = nil -- Variable to store the FPS label
@@ -296,53 +349,3 @@ Tab5:AddToggle({
 })
 
 
--- Auto Farm Wolves Variables
-local AutoFarmWolvesEnabled = false
-
-local WolfPositions = {
-    Vector3.new(103, 29, -2173), -- Wolf1
-    Vector3.new(145, 29, -2137), -- Wolf2
-    Vector3.new(49, 29, -2122),  -- Wolf3
-    Vector3.new(58, 29, -2070)   -- Wolf4
-}
-
--- Auto Farm Wolves Function
-local function autoFarmWolves()
-    spawn(function()
-        OrionLib:MakeNotification({
-            Name = "Auto Farm Wolves",
-            Content = "Auto farm wolves started! Press '=' and Backspace to stop.",
-            Time = 3
-        })
-        AutoClickEnabled = true -- Enable autoclick
-        autoClick()
-        
-        while AutoFarmWolvesEnabled do
-            for _, position in ipairs(WolfPositions) do
-                if not AutoFarmWolvesEnabled then break end -- Stop if disabled
-                teleportTo(position)
-                wait(0.5) -- Small delay to ensure teleport completes
-            end
-        end
-
-        AutoClickEnabled = false -- Disable autoclick when stopped
-    end)
-end
-
--- Add Auto Farm Wolves Button in Auto Farm Tab
-Tab3:AddToggle({
-    Name = "Auto Farm Wolves",
-    Default = false,
-    Callback = function(Value)
-        AutoFarmWolvesEnabled = Value
-        if AutoFarmWolvesEnabled then
-            autoFarmWolves()
-        else
-            OrionLib:MakeNotification({
-                Name = "Auto Farm Stopped",
-                Content = "Auto farm has been stopped!",
-                Time = 2
-            })
-        end
-    end
-})
