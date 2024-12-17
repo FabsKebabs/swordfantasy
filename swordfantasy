@@ -10,7 +10,7 @@ local Window = OrionLib:MakeWindow({
 local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
 local Tab4 = Window:MakeTab({Name = "Bosses", Icon = "", PremiumOnly = false})
-local Tab5 = Window:MakeTab({Name = "Settings", Icon = "", PremiumOnly = false})
+
 
 local Player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
