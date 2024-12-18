@@ -10,6 +10,8 @@ local Window = OrionLib:MakeWindow({
 local Tab1 = Window:MakeTab({Name = "Main", Icon = "", PremiumOnly = false})
 local Tab2 = Window:MakeTab({Name = "Teleports", Icon = "", PremiumOnly = false})
 local Tab4 = Window:MakeTab({Name = "Bosses", Icon = "", PremiumOnly = false})
+local Tab5 = Window:MakeTab({Name = "Emulator Settings", Icon = "", PremiumOnly = false})
+
 
 
 local Player = game.Players.LocalPlayer
@@ -174,3 +176,20 @@ Tab4:AddButton({Name = "Crab Boss", Callback = function() teleportTo(Vector3.new
 Tab4:AddButton({Name = "Spider Boss", Callback = function() teleportTo(Vector3.new(-3007, 88, 2885)) end})
 Tab4:AddButton({Name = "Spider Small Boss", Callback = function() teleportTo(Vector3.new(-252, 20, -3077)) end})
 Tab4:AddButton({Name = "Crab Small Boss", Callback = function() teleportTo(Vector3.new(787, 27, -960)) end})
+
+
+-- Emulator Settings Tab
+Tab5:AddButton({
+    Name = "Equip Sword (Press 1)",
+    Callback = function()
+        -- Simulate pressing the "1" key to equip the sword
+        game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.One, false, game)
+        game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.One, false, game)
+
+        OrionLib:MakeNotification({
+            Name = "Sword Equipped",
+            Content = "You have equipped the sword!",
+            Time = 2
+        })
+    end
+})
