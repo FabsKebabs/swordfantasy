@@ -193,3 +193,15 @@ Tab5:AddButton({
         })
     end
 })
+
+
+-- Settings Tab
+local Tab6 = Window:MakeTab({Name = "Settings(READ ME)", Icon = "", PremiumOnly = false})
+
+-- Add labels for keybind instructions
+Tab6:AddLabel("Press T to Hide UI")
+Tab6:AddLabel("Press Right Shift to Open UI")
+Tab6:AddLabel("Press Backspace To Disable Auto Click")
+
+
+
